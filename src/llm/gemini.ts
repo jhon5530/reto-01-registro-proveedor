@@ -58,17 +58,35 @@ function aObjeto(json: string): Record<string, unknown> {
 
 function errorPorEstado(estado: number, cuerpo: string): ErrorLLM {
   if (estado === 401 || estado === 403) return new ErrorLLM("autenticacion")
-  if (estado === 429) return new ErrorLLM("cuota")
+  if (estado === 429) return new ErrorLLM("cuota", undefined, esperaSugerida(cuerpo))
   if (estado >= 500) return new ErrorLLM("proveedor", `HTTP ${estado}`)
   const msg = /"message":\s*"([^"]{0,200})/.exec(cuerpo)?.[1]
   const detalle = `HTTP ${estado}${msg ? `: ${msg}` : ""}`
   return new ErrorLLM(estado === 404 ? "modelo_no_disponible" : "solicitud_invalida", detalle)
 }
 
+/** Lee el retryDelay ("12s") que Google sugiere en un 429. */
+function esperaSugerida(cuerpo: string): number | undefined {
+  const s = /"retryDelay":\s*"(\d+(?:\.\d+)?)s"/.exec(cuerpo)?.[1]
+  return s ? Number(s) * 1000 : undefined
+}
+
+/** Errores transitorios que vale la pena reintentar (sobrecarga o límite de velocidad). */
+const REINTENTABLES = new Set(["cuota", "proveedor"])
+const ESPERA_MAXIMA_MS = 20_000
+
+const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 export class GeminiLLM implements ProveedorLLM {
   readonly proveedor = "gemini"
 
-  constructor(readonly modelo: string, private readonly clave: string, private readonly timeoutMs: number) {
+  constructor(
+    readonly modelo: string,
+    private readonly clave: string,
+    private readonly timeoutMs: number,
+    private readonly reintentos = 3,
+    private readonly esperaBaseMs = 2_000,
+  ) {
     if (!clave) throw new Error("Falta GEMINI_API_KEY en el entorno del backend.")
   }
 
@@ -84,7 +102,20 @@ export class GeminiLLM implements ProveedorLLM {
     return this.interpretar(datos)
   }
 
+  /** Reintenta 503/429 con espera exponencial (o la que sugiera Google), con tope por espera. */
   private async post(cuerpo: unknown): Promise<unknown> {
+    for (let intento = 0; ; intento++) {
+      try {
+        return await this.postUnaVez(cuerpo)
+      } catch (e) {
+        const reintentable = e instanceof ErrorLLM && REINTENTABLES.has(e.tipo) && intento < this.reintentos
+        if (!reintentable) throw e
+        await esperar(Math.min(e.esperaMs ?? this.esperaBaseMs * 2 ** intento, ESPERA_MAXIMA_MS))
+      }
+    }
+  }
+
+  private async postUnaVez(cuerpo: unknown): Promise<unknown> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.modelo)}:generateContent`
     let res: Response
     try {

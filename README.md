@@ -45,9 +45,10 @@ soportes se evalúan contra la fecha de hoy; para fijarla: `FECHA_EJECUCION=2026
 | Variable | Obligatoria | Por defecto | Descripción |
 |---|---|---|---|
 | `LLM_PROVIDER` | No | `gemini` si hay clave, si no `mock` | `gemini` o `mock` (simulado, sin costo). |
-| `LLM_MODEL` | No | `gemini-3.8-flash` | Modelo del proveedor. |
+| `LLM_MODEL` | No | `gemini-3.5-flash` | Modelo del proveedor. |
 | `GEMINI_API_KEY` | Para `gemini` | — | Clave del modelo. **Solo en el entorno del backend.** |
 | `LLM_TIMEOUT_MS` | No | `60000` | Timeout por llamada al modelo. |
+| `LLM_REINTENTOS` | No | `3` | Reintentos con espera exponencial ante 503/429 del proveedor. |
 | `MAX_ITERACIONES` | No | `25` | Tope de iteraciones herramienta→modelo por turno. |
 | `MAX_TOKENS_SESION` | No | `200000` | Tope de tokens por sesión. |
 | `MAX_TURNOS_SESION` | No | `40` | Tope de mensajes por sesión. |

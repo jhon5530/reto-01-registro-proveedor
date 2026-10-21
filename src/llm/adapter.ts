@@ -57,7 +57,8 @@ const MENSAJES: Record<TipoErrorLLM, string> = {
 
 /** Error tipado del proveedor: lleva un mensaje apto para mostrar en el chat (sin trazas ni claves). */
 export class ErrorLLM extends Error {
-  constructor(readonly tipo: TipoErrorLLM, detalle?: string) {
+  /** esperaMs: espera sugerida por el proveedor antes de reintentar (si la indicó). */
+  constructor(readonly tipo: TipoErrorLLM, detalle?: string, readonly esperaMs?: number) {
     super(detalle ? `${MENSAJES[tipo]} (${detalle})` : MENSAJES[tipo])
     this.name = "ErrorLLM"
   }

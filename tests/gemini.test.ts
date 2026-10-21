@@ -42,7 +42,7 @@ describe("adaptador Gemini", () => {
 
   test.each([[429, "cuota"], [403, "autenticacion"], [503, "proveedor"]])("HTTP %p → ErrorLLM %p", async (estado, tipo) => {
     simular(estado, { error: { message: "x" } })
-    const e = await new GeminiLLM("m", "k", 1000).enviar([{ rol: "usuario", texto: "h" }], defs).catch((x: unknown) => x)
+    const e = await new GeminiLLM("m", "k", 1000, 0).enviar([{ rol: "usuario", texto: "h" }], defs).catch((x: unknown) => x)
     expect(e).toBeInstanceOf(ErrorLLM)
     expect((e as ErrorLLM).tipo).toBe(tipo as ErrorLLM["tipo"])
   })
@@ -54,4 +54,25 @@ test("HTTP 404 → modelo_no_disponible con el detalle del proveedor", async () 
   expect(e.tipo).toBe("modelo_no_disponible")
   expect(e.message).toContain("LLM_MODEL")
   expect(e.message).toContain("no longer available")
+})
+
+test("reintenta un 503 y luego responde; respeta el retryDelay de un 429", async () => {
+  const estados = [503, 429, 200]
+  let llamadas = 0
+  globalThis.fetch = (async () => {
+    const estado = estados[llamadas++] ?? 200
+    const cuerpo = estado === 200
+      ? { candidates: [{ content: { parts: [{ text: "ok" }] } }] }
+      : { error: { message: "x", details: [{ retryDelay: "0.01s" }] } }
+    return new Response(JSON.stringify(cuerpo), { status: estado })
+  }) as unknown as typeof fetch
+  const r = await new GeminiLLM("m", "k", 1000, 3, 1).enviar([{ rol: "usuario", texto: "h" }], [])
+  expect(r.texto).toBe("ok")
+  expect(llamadas).toBe(3)
+})
+
+test("agotados los reintentos, el error llega claro al ciclo", async () => {
+  globalThis.fetch = (async () => new Response("{}", { status: 503 })) as unknown as typeof fetch
+  const e = (await new GeminiLLM("m", "k", 1000, 2, 1).enviar([{ rol: "usuario", texto: "h" }], []).catch((x: unknown) => x)) as ErrorLLM
+  expect(e.tipo).toBe("proveedor")
 })

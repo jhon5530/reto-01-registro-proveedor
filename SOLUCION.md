@@ -72,7 +72,7 @@ cada paso:
    vencidos o ausentes), `simular_envio` exige además `forzar_con_bloqueos: true`. El prompt obliga a
    preguntar de nuevo por esos bloqueos, y el archivo `ENVIO-SIMULADO.md` deja constancia de las
    advertencias aceptadas.
-5. **Errores (CA5):** los errores del proveedor (timeout, 401/403, 429, 5xx, respuesta inválida) se
+5. **Errores (CA5):** el adaptador reintenta automáticamente hasta `LLM_REINTENTOS` veces ante 503 (sobrecarga) o 429 (límite de velocidad), con espera exponencial o la que sugiera Google (`retryDelay`), con tope de 20 s por espera. Si aun así falla, los errores del proveedor (timeout, 401/403, 429, 5xx, respuesta inválida) se
    convierten en `ErrorLLM` con un mensaje claro para el chat. La sesión no muere y el siguiente mensaje
    funciona.
 6. **Trazabilidad (CA4/RN5):** cada llamada aparece como tarjeta en el chat (nombre, argumentos, resumen,
@@ -90,7 +90,7 @@ chat aunque quiera.
 | | |
 |---|---|
 | **Proveedor** | Google Gemini (API REST `generateContent`), detrás de la interfaz `ProveedorLLM`. |
-| **Modelo** | `gemini-3.8-flash` (configurable con `LLM_MODEL`). Se empezó con `gemini-2.5-flash`, pero Google ya no lo ofrece a cuentas nuevas (HTTP 404); el cambio fue solo de variable de entorno, sin tocar código. |
+| **Modelo** | `gemini-3.5-flash` (configurable con `LLM_MODEL`). Se probó `gemini-2.5-flash` (retirado para cuentas nuevas, HTTP 404) y `gemini-3.8-flash` (saturado en la capa gratuita, HTTP 503 frecuentes). Se eligió una versión Flash estable; cada cambio fue solo de variable de entorno, sin tocar código. |
 | **Por qué** | (1) Tiene **capa gratuita** sin tarjeta (desde abril de 2026 limitada a modelos Flash), suficiente para la demo y la defensa. (2) Buen *function calling* con JSON Schema (`parametersJsonSchema`), que se genera directamente desde zod. (3) La tarea es casi determinista porque las herramientas hacen el trabajo pesado: no hace falta un modelo grande, sino uno que encadene herramientas y redacte un resumen. |
 | **Alternativa siempre disponible** | `LLM_PROVIDER=mock`: un proveedor simulado con guion fijo para probar el ciclo, la guardia y el front sin clave. Si se agota la cuota en la defensa, la app sigue respondiendo. |
 
