@@ -1,0 +1,64 @@
+{
+  "pais_maestro": "CO",
+  "clave_identificador_tributario": "nit",
+  "identificador_tributario_por_pais": {
+    "CO": "NIT",
+    "EC": "RUC",
+    "PE": "RUC",
+    "PA": "RUC",
+    "HN": "RTN"
+  },
+  "etiquetas_ambiguas": [
+    "Identificación tributaria",
+    "Número de identificación fiscal"
+  ],
+  "prefijo_datos_bancarios": "banco.",
+  "campos_enmascarados": [
+    "banco.numero_cuenta"
+  ],
+  "umbral_confianza": 0.8,
+  "umbral_candidato": 0.5,
+  "formatos_generables": [
+    "xlsx",
+    "pdf"
+  ],
+  "palabras_vacias": [
+    "de",
+    "del",
+    "la",
+    "el",
+    "los",
+    "las",
+    "o",
+    "y",
+    "en",
+    "a"
+  ],
+  "palabras_confirmacion": [
+    "si",
+    "sí",
+    "confirmo",
+    "confirmado",
+    "envia",
+    "envía",
+    "envialo",
+    "envíalo",
+    "enviar",
+    "adelante",
+    "procede",
+    "dale",
+    "ok",
+    "de acuerdo",
+    "hazlo",
+    "aprobado"
+  ],
+  "nombres_soporte": {
+    "camara_comercio": "Certificado de existencia y representación legal (Cámara de Comercio)",
+    "rut": "Registro Único Tributario (RUT)",
+    "certificacion_bancaria": "Certificación bancaria",
+    "estados_financieros": "Estados financieros",
+    "parafiscales": "Certificación de pago de parafiscales y seguridad social",
+    "certificado_cumplimiento_tributario": "Certificado de cumplimiento tributario",
+    "certificado_iso_9001": "Certificado ISO 9001"
+  }
+}
