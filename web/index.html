@@ -1,1 +1,67 @@
-<h1>tmp</h1>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro como Proveedor · Agente</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%232f5bea%22/%3E%3Ctext x=%2216%22 y=%2221%22 font-size=%2213%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22%3ERP%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="barra">
+    <div class="marca">
+      <span class="logo" aria-hidden="true">RP</span>
+      <div>
+        <h1>Agente de Registro como Proveedor</h1>
+        <p id="estado-modelo" class="sutil">conectando…</p>
+      </div>
+    </div>
+    <button id="nueva-sesion" class="boton secundario" type="button">Nueva sesión</button>
+  </header>
+
+  <main class="contenedor">
+    <aside class="lateral" aria-label="Accesos rápidos">
+      <h2>Casos</h2>
+      <div id="casos" class="chips"></div>
+      <h2>Prompt de la demo</h2>
+      <button id="prompt-demo" class="boton enlace" type="button">Procesa el caso "ec-corp-andina"…</button>
+      <h2>Archivos generados</h2>
+      <div id="archivos" class="archivos sutil">Procesa un caso para ver sus archivos.</div>
+    </aside>
+
+    <section class="chat" aria-label="Conversación">
+      <div id="mensajes" class="mensajes" aria-live="polite">
+        <div class="bienvenida">
+          <h2>¿Qué solicitud procesamos?</h2>
+          <p>Indica un caso y el agente lee la solicitud, mapea los campos al repositorio maestro,
+            genera el formulario y arma el paquete para firma. <strong>Nunca envía nada sin tu confirmación.</strong></p>
+        </div>
+      </div>
+
+      <div id="banner-confirmacion" class="banner" hidden>
+        <span>⚠️ El agente espera tu <strong>confirmación explícita</strong> antes de cualquier acción externa.</span>
+        <div class="acciones">
+          <button id="confirmar" class="boton peligro" type="button">Sí, confirmo</button>
+          <button id="cancelar" class="boton secundario" type="button">No, cancelar</button>
+        </div>
+      </div>
+
+      <form id="formulario" class="entrada">
+        <textarea id="texto" rows="2" maxlength="2000" placeholder='Ej.: Procesa el caso "co-industrias-delta"' required></textarea>
+        <button id="enviar" class="boton" type="submit">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <dialog id="dialogo-clave">
+    <form method="dialog" id="form-clave">
+      <h2>Clave de acceso</h2>
+      <p class="sutil">Este link está protegido. Ingresa la clave indicada en el README.</p>
+      <input id="input-clave" type="password" autocomplete="off" required />
+      <button class="boton" type="submit">Entrar</button>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
