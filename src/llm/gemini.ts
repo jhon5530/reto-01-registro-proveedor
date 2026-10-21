@@ -61,7 +61,8 @@ function errorPorEstado(estado: number, cuerpo: string): ErrorLLM {
   if (estado === 429) return new ErrorLLM("cuota")
   if (estado >= 500) return new ErrorLLM("proveedor", `HTTP ${estado}`)
   const msg = /"message":\s*"([^"]{0,200})/.exec(cuerpo)?.[1]
-  return new ErrorLLM("respuesta_invalida", `HTTP ${estado}${msg ? `: ${msg}` : ""}`)
+  const detalle = `HTTP ${estado}${msg ? `: ${msg}` : ""}`
+  return new ErrorLLM(estado === 404 ? "modelo_no_disponible" : "solicitud_invalida", detalle)
 }
 
 export class GeminiLLM implements ProveedorLLM {

@@ -90,7 +90,7 @@ chat aunque quiera.
 | | |
 |---|---|
 | **Proveedor** | Google Gemini (API REST `generateContent`), detrás de la interfaz `ProveedorLLM`. |
-| **Modelo** | `gemini-2.5-flash` (configurable con `LLM_MODEL`, por ejemplo a un Flash más reciente o a Flash-Lite). |
+| **Modelo** | `gemini-3.8-flash` (configurable con `LLM_MODEL`). Se empezó con `gemini-2.5-flash`, pero Google ya no lo ofrece a cuentas nuevas (HTTP 404); el cambio fue solo de variable de entorno, sin tocar código. |
 | **Por qué** | (1) Tiene **capa gratuita** sin tarjeta (desde abril de 2026 limitada a modelos Flash), suficiente para la demo y la defensa. (2) Buen *function calling* con JSON Schema (`parametersJsonSchema`), que se genera directamente desde zod. (3) La tarea es casi determinista porque las herramientas hacen el trabajo pesado: no hace falta un modelo grande, sino uno que encadene herramientas y redacte un resumen. |
 | **Alternativa siempre disponible** | `LLM_PROVIDER=mock`: un proveedor simulado con guion fijo para probar el ciclo, la guardia y el front sin clave. Si se agota la cuota en la defensa, la app sigue respondiendo. |
 
@@ -100,8 +100,9 @@ chat aunque quiera.
   porque el historial y los resultados se reenvían en cada iteración (system prompt de unos 1.800 tokens
   más definiciones de herramientas de unos 900).
 - Entre 1.000 y 3.000 tokens de salida, incluido el razonamiento interno del modelo.
-- Con precios de lista del nivel pagado de Gemini 2.5 Flash (unos US$0,30 por millón de tokens de
-  entrada y US$2,50 por millón de salida): **≈ US$0,01–0,013 por caso**. 12 casos al mes cuestan menos
+- Con precios de lista del nivel pagado de la familia Flash (referencia Gemini 2.5 Flash: unos US$0,30 por
+  millón de tokens de entrada y US$2,50 por millón de salida; verificar la tarifa vigente del modelo
+  configurado): **≈ US$0,01–0,013 por caso**. 12 casos al mes cuestan menos
   de US$0,20.
 - En la capa gratuita: **US$0**, sujeto a los límites diarios del proyecto.
 - El simple envío confirmado (segundo turno) cuesta una fracción de eso.

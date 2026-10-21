@@ -3,7 +3,7 @@ import { z } from "zod"
 /** Configuración desde variables de entorno. La clave del modelo nunca sale de este proceso. */
 const esquema = z.object({
   LLM_PROVIDER: z.enum(["gemini", "mock"]).optional(),
-  LLM_MODEL: z.string().default("gemini-2.5-flash"),
+  LLM_MODEL: z.string().default("gemini-3.8-flash"),
   GEMINI_API_KEY: z.string().default(""),
   LLM_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
   MAX_ITERACIONES: z.coerce.number().int().min(1).max(100).default(25),

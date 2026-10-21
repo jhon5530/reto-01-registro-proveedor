@@ -47,3 +47,11 @@ describe("adaptador Gemini", () => {
     expect((e as ErrorLLM).tipo).toBe(tipo as ErrorLLM["tipo"])
   })
 })
+
+test("HTTP 404 → modelo_no_disponible con el detalle del proveedor", async () => {
+  globalThis.fetch = (async () => new Response(JSON.stringify({ error: { message: "This model is no longer available" } }), { status: 404 })) as unknown as typeof fetch
+  const e = (await new GeminiLLM("viejo", "k", 1000).enviar([{ rol: "usuario", texto: "h" }], []).catch((x: unknown) => x)) as ErrorLLM
+  expect(e.tipo).toBe("modelo_no_disponible")
+  expect(e.message).toContain("LLM_MODEL")
+  expect(e.message).toContain("no longer available")
+})

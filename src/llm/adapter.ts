@@ -43,13 +43,15 @@ export interface ProveedorLLM {
   enviar(mensajes: Mensaje[], herramientas: DefinicionHerramienta[]): Promise<RespuestaLLM>
 }
 
-export type TipoErrorLLM = "timeout" | "autenticacion" | "cuota" | "proveedor" | "respuesta_invalida"
+export type TipoErrorLLM = "timeout" | "autenticacion" | "cuota" | "proveedor" | "modelo_no_disponible" | "solicitud_invalida" | "respuesta_invalida"
 
 const MENSAJES: Record<TipoErrorLLM, string> = {
   timeout: "El modelo de lenguaje no respondió a tiempo. Intenta de nuevo en unos segundos.",
   autenticacion: "El proveedor del modelo rechazó la credencial configurada en el servidor. Revisa la variable de entorno de la clave.",
   cuota: "Se agotó la cuota o el límite de velocidad del proveedor del modelo. Espera un momento e intenta de nuevo.",
   proveedor: "El proveedor del modelo tuvo un error temporal. Intenta de nuevo.",
+  modelo_no_disponible: "El modelo configurado en LLM_MODEL no está disponible en el proveedor. Cambia LLM_MODEL en el entorno del servidor y reinícialo.",
+  solicitud_invalida: "El proveedor del modelo rechazó la solicitud.",
   respuesta_invalida: "El modelo devolvió una respuesta que no se pudo interpretar. Intenta reformular el mensaje.",
 }
 
